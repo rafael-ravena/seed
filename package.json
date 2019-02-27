@@ -1,9 +1,9 @@
 {
-  "name": "gulp-pug-sass-starter",
+  "name": "seed",
   "version": "1.0.0",
-  "description": "A Pug and Sass starter project using gulp for task automation.",
+  "description": "Seed based in pug+sass for static html websites",
   "main": "gulpfile.js",
-  "author": "Joshua Azemoh <joshazemoh@gmail.com> (http://azemoh.com)",
+  "author": "Rafael Ravena (github.com/rafael-ravena) - Mozart Brum (github.com/boxmo) - Joshua Azemoh (github.com/azemoh)",
   "scripts": {
     "start": "gulp",
     "build": "gulp build",
@@ -15,7 +15,10 @@
     "gulp-autoprefixer": "^3.0.1",
     "gulp-data": "^1.2.0",
     "gulp-pug": "^3.0.3",
-    "gulp-sass": "^2.0.4"
+    "gulp-sass": "^2.0.4",
+    "gulp-hash": "^4.2.2",
+    "gulp-hash-references": "^3.0.1",
+    "gulp-rename": "^1.4.0"
   },
   "repository": {
     "type": "git",
