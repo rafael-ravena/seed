@@ -9,6 +9,11 @@ var gulp = require('gulp'),
   sass = require('gulp-sass'),
   browserSync = require('browser-sync');
 
+var rename = require("gulp-rename");
+var hash = require('gulp-hash');
+var references = require('gulp-hash-references');
+
+
 /*
  * Directories here
  */
@@ -16,7 +21,10 @@ var paths = {
   public: './public/',
   sass: './src/sass/',
   css: './public/css/',
-  data: './src/_data/'
+  data: './src/_data/',
+  js: './public/js/',
+  fonts: './public/fonts',
+  images: './public/img'
 };
 
 /**
@@ -33,20 +41,43 @@ gulp.task('pug', function () {
       process.stderr.write(err.message + '\n');
       this.emit('end');
     })
+    .pipe(rename(function (path) {
+      if(path.basename === 'index') { return }
+      path.dirname = path.basename;
+      path.basename = 'index';
+      path.extname = '.html';
+    }))
     .pipe(gulp.dest(paths.public));
+});
+
+
+gulp.task('js', function () {
+  return gulp.src('./src/js/**/*.js')
+    .pipe(gulp.dest(paths.js))
+});
+
+gulp.task('fonts', function () {
+  return gulp.src('./src/fonts/**/*')
+    .pipe(gulp.dest(paths.fonts))
+});
+
+gulp.task('images', function () {
+  return gulp.src('./src/img/**/*')
+    .pipe(gulp.dest(paths.images))
+    .pipe(gulp.dest('.'))
 });
 
 /**
  * Recompile .pug files and live reload the browser
  */
-gulp.task('rebuild', ['pug'], function () {
+gulp.task('rebuild', ['js', 'fonts', 'images', 'pug'], function () {
   browserSync.reload();
 });
 
 /**
  * Wait for pug and sass tasks, then launch the browser-sync Server
  */
-gulp.task('browser-sync', ['sass', 'pug'], function () {
+gulp.task('browser-sync', ['sass', 'js', 'pug'], function () {
   browserSync({
     server: {
       baseDir: paths.public
@@ -56,11 +87,11 @@ gulp.task('browser-sync', ['sass', 'pug'], function () {
 });
 
 /**
- * Compile .scss files into public css directory With autoprefixer no
+ * Compile .sass files into public css directory With autoprefixer no
  * need for vendor prefixes then live reload the browser.
  */
 gulp.task('sass', function () {
-  return gulp.src(paths.sass + '*.scss')
+  return gulp.src(paths.sass + '*.sass')
     .pipe(sass({
       includePaths: [paths.sass],
       outputStyle: 'compressed'
@@ -76,16 +107,21 @@ gulp.task('sass', function () {
 });
 
 /**
- * Watch scss files for changes & recompile
+ * Watch sass files for changes & recompile
  * Watch .pug files run pug-rebuild then reload BrowserSync
  */
 gulp.task('watch', function () {
-  gulp.watch(paths.sass + '**/*.scss', ['sass']);
+  gulp.watch(paths.sass + '**/*.sass', ['sass']);
+  gulp.watch('./src/fonts/*',  ['fonts']);
+  gulp.watch('./src/**/*.js',  ['rebuild']);
+  gulp.watch('./src/img/*',    ['rebuild']);
   gulp.watch('./src/**/*.pug', ['rebuild']);
+  gulp.watch('./src/_data/*.json', ['rebuild']);
+
 });
 
 // Build task compile sass and pug.
-gulp.task('build', ['sass', 'pug']);
+gulp.task('build', ['sass', 'js', 'fonts', 'images', 'pug']);
 
 /**
  * Default task, running just `gulp` will compile the sass,
