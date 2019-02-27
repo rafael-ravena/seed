@@ -82,6 +82,7 @@ gulp.task('browser-sync', ['sass', 'js', 'pug'], function () {
     server: {
       baseDir: paths.public
     },
+    port: 8080,
     notify: false
   });
 });
